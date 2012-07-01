@@ -1,0 +1,54 @@
+/*
+ * $Id: $
+ *
+ * Copyright (C) 2012 Stoyan Rachev (stoyanr@gmail.com)
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ */
+
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+
+.normalButton {
+  display: block;
+  font-size: 16pt;
+}
+
+.gwt-DialogBox {
+  width: 400px;
+}
+
+.dialogPanel {
+  margin: 5px;
+}
+
+.messageHtmlError {
+  color: red;
+}
+
+#closeButton {
+  margin: 15px 6px 6px;
+}
+
+.xButton, td.xButton {
+  color: gray;
+  cursor: pointer;
+}
+
+.xButton:hover, td.xButton:hover {
+  color: red;
+  cursor: hand;
+}

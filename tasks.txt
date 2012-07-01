@@ -1,0 +1,9 @@
+*Dirty / last saved behavior
+
+Github
+Status
+Priority
+Reorder / Sort / Drag & Drop
+Tests
+Web workers
+Database on backend
