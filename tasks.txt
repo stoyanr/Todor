@@ -1,8 +1,7 @@
 *Dirty / last saved behavior
+*Github
 
-Github
-Status
-Priority
+Status and priority of items
 Reorder / Sort / Drag & Drop
 Tests
 Web workers
