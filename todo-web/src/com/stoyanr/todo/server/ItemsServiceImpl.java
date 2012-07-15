@@ -23,6 +23,8 @@ import java.util.List;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.stoyanr.todo.client.ItemsService;
 import com.stoyanr.todo.model.Item;
+import com.stoyanr.todo.model.Item.Priority;
+import com.stoyanr.todo.model.Item.Status;
 
 @SuppressWarnings("serial")
 public class ItemsServiceImpl extends RemoteServiceServlet implements
@@ -40,7 +42,8 @@ public class ItemsServiceImpl extends RemoteServiceServlet implements
     public Date saveItems(Item[] items) throws IllegalArgumentException {
         this.items.clear();
         for (Item item : items) {
-            this.items.add(new Item(item.getId(), escapeHtml(item.getText())));
+            this.items.add(new Item(item.getId(), escapeHtml(item.getText()), 
+                Priority.MEDIUM, Status.NEW));
         }
         lastSaved = new Date();
         return lastSaved;

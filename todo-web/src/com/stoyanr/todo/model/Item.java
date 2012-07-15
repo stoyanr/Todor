@@ -21,17 +21,28 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Item implements Serializable {
 
-    private long id;
-    private String text;
-
-    @SuppressWarnings("unused")
-    private Item() {
-        this(-1, "");
+    public enum Priority {
+        HIGH, MEDIUM, LOW
     }
 
-    public Item(long id, String text) {
+    public enum Status {
+        NEW, IN_PROGRESS, FINISHED
+    }
+
+    private long id;
+    private String text;
+    private Priority priority;
+    private Status status;
+
+    public Item() {
+        this(-1, "", Priority.MEDIUM, Status.NEW);
+    }
+
+    public Item(long id, String text, Priority priority, Status status) {
         this.id = id;
         this.text = text;
+        this.priority = priority;
+        this.status = status;
     }
 
     public long getId() {
@@ -45,4 +56,22 @@ public class Item implements Serializable {
     public void setText(String text) {
         this.text = text;
     }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+
 }

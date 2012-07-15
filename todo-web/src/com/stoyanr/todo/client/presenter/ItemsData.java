@@ -21,6 +21,8 @@ import java.util.List;
 
 import com.stoyanr.todo.client.util.LocalStorage;
 import com.stoyanr.todo.model.Item;
+import com.stoyanr.todo.model.Item.Priority;
+import com.stoyanr.todo.model.Item.Status;
 
 public class ItemsData {
 
@@ -61,7 +63,7 @@ public class ItemsData {
     }
 
     public void addItem(String text) {
-        Item item = new Item(nextId, text);
+        Item item = new Item(nextId, text, Priority.MEDIUM, Status.NEW);
         items.add(item);
         saveItemToStorage(item);
         nextId++;
@@ -136,13 +138,14 @@ public class ItemsData {
         Item item = null;
         String value = storage.getStringValue(ITEM_KEY + id);
         if (!value.isEmpty()) {
-            item = new Item(id, value);
+            item = JsonSerializer.fromString(value);
         }
         return item;
     }
 
     private void saveItemToStorage(Item item) {
-        storage.setStringValue(ITEM_KEY + item.getId(), item.getText());
+        String json = JsonSerializer.toString(item);
+        storage.setStringValue(ITEM_KEY + item.getId(), json);
     }
 
     private void deleteItemFromStorage(Item item) {
