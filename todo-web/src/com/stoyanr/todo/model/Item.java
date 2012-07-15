@@ -21,7 +21,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Item implements Serializable {
 
-    private int id;
+    private long id;
     private String text;
 
     @SuppressWarnings("unused")
@@ -29,12 +29,12 @@ public class Item implements Serializable {
         this(-1, "");
     }
 
-    public Item(int id, String text) {
+    public Item(long id, String text) {
         this.id = id;
         this.text = text;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

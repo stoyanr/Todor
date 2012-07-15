@@ -1,6 +1,9 @@
 *Dirty / last saved behavior
 *Github
+*MVP
+*Local storage abstraction
 
+User handling
 Status and priority of items
 Reorder / Sort / Drag & Drop
 Tests
