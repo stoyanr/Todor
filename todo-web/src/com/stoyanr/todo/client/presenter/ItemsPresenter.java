@@ -16,7 +16,9 @@
 
 package com.stoyanr.todo.client.presenter;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,6 +26,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.stoyanr.todo.client.ItemsServiceAsync;
 import com.stoyanr.todo.client.view.ItemsView;
 import com.stoyanr.todo.model.Item;
+import com.stoyanr.todo.model.Item.Priority;
+import com.stoyanr.todo.model.Item.Status;
 
 public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
 
@@ -31,6 +35,9 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     private final HandlerManager eventBus;
     private final ItemsView<Item> view;
     private ItemsData data;
+    
+    private static final String[] PRIO_NAMES = { "High", "Medium", "Low" };
+    private static final String[] STATUS_NAMES = { "New", "In Progress", "Finished" };
 
     public ItemsPresenter(ItemsServiceAsync svc, HandlerManager eventBus,
         ItemsView<Item> view) {
@@ -73,7 +80,32 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     public void updateText(Item item, String value) {
         data.updateItem(item, value);
     }
+    
+    @Override
+    public String getPriority(Item item) {
+        return getPriorityName(item.getPriority());
+    }
 
+    @Override
+    public void updatePriority(Item item, String value) {
+        data.updateItem(item, getPriorityByName(value));
+    }
+
+    @Override
+    public int comparePriorities(Item o1, Item o2) {
+        return (o1.getPriority().compareTo(o2.getPriority()));
+    }
+
+    @Override
+    public String getStatus(Item item) {
+        return getStatusName(item.getStatus());
+    }
+
+    @Override
+    public void updateStatus(Item item, String value) {
+        data.updateItem(item, getStatusByName(value));
+    }
+    
     @Override
     public void save() {
         saveItemsToServer();
@@ -137,6 +169,41 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
             data.setLastSaved(result);
             view.onSaveSuccess();
         }
+    }
+
+    public static List<String> getPriorityNames() {
+        return Arrays.asList(PRIO_NAMES);
+    }
+
+    public static List<String> getStatusNames() {
+        return Arrays.asList(STATUS_NAMES);
+    }
+
+    private static String getPriorityName(Priority priority) {
+        return PRIO_NAMES[priority.ordinal()];
+    }
+    
+    private static Priority getPriorityByName(String name) {
+        return Priority.values()[getFirstIndex(name, PRIO_NAMES)];
+    }
+    
+    private static String getStatusName(Status status) {
+        return STATUS_NAMES[status.ordinal()];
+    }
+
+    private static Status getStatusByName(String name) {
+        return Status.values()[getFirstIndex(name, STATUS_NAMES)];
+    }
+
+    private static int getFirstIndex(String string, String[] strings) {
+        int result = -1;
+        for (int i = 0; i < strings.length; i++) {
+            if (strings[i].equals(string)) {
+                result = i;
+                break;
+            }
+        }
+        return result;
     }
 
 }

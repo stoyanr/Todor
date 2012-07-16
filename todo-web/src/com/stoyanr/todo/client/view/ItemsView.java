@@ -34,6 +34,16 @@ public interface ItemsView<T> {
 
         void updateText(T t, String value);
 
+        String getPriority(T t);
+
+        void updatePriority(T t, String value);
+
+        int comparePriorities(T o1, T o2);
+
+        String getStatus(T t);
+
+        void updateStatus(T t, String value);
+
         void save();
     }
 

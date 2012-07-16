@@ -3,9 +3,10 @@
 *MVP
 *Local storage abstraction
 
-User handling
 Status and priority of items
 Reorder / Sort / Drag & Drop
+
+User handling
 Tests
 Web workers
 Database on backend

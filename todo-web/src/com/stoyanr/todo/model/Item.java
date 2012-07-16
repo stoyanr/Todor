@@ -73,5 +73,4 @@ public class Item implements Serializable {
         this.status = status;
     }
 
-
 }

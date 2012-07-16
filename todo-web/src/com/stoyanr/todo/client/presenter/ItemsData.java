@@ -77,6 +77,18 @@ public class ItemsData {
         setDirty(true);
     }
 
+    public void updateItem(Item item, Priority prio) {
+        item.setPriority(prio);
+        saveItemToStorage(item);
+        setDirty(true);
+    }
+
+    public void updateItem(Item item, Status status) {
+        item.setStatus(status);
+        saveItemToStorage(item);
+        setDirty(true);
+    }
+
     public void deleteItem(Item item, int index) {
         items.remove(index);
         deleteItemFromStorage(item);

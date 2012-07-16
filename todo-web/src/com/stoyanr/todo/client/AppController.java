@@ -68,7 +68,8 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 
     private ItemsView<Item> getItemsView() {
         if (itemsView == null) {
-            itemsView = new ItemsViewImpl<Item>();
+            itemsView = new ItemsViewImpl<Item>(ItemsPresenter.getPriorityNames(),
+                ItemsPresenter.getStatusNames());
         }
         return itemsView;
     }
