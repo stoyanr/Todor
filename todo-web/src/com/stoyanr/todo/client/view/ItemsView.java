@@ -16,9 +16,9 @@
 
 package com.stoyanr.todo.client.view;
 
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.List;
+
+import com.google.gwt.user.client.ui.Widget;
 
 public interface ItemsView<T> {
 
@@ -29,7 +29,11 @@ public interface ItemsView<T> {
         void delete(int index, T t);
 
         void clearAll();
+        
+        String getId(T t);
 
+        int compareIds(T o1, T o2);
+        
         String getText(T t);
 
         void updateText(T t, String value);
@@ -44,7 +48,10 @@ public interface ItemsView<T> {
 
         void updateStatus(T t, String value);
 
+        int compareStatuses(T o1, T o2);
+        
         void save();
+
     }
 
     Widget asWidget();

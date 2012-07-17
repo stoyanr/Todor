@@ -72,6 +72,16 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     }
 
     @Override
+    public String getId(Item item) {
+        return String.valueOf(item.getId());
+    }
+    
+    @Override
+    public int compareIds(Item o1, Item o2) {
+        return (int) (o1.getId() - o2.getId());
+    }
+
+    @Override
     public String getText(Item item) {
         return item.getText();
     }
@@ -104,6 +114,11 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     @Override
     public void updateStatus(Item item, String value) {
         data.updateItem(item, getStatusByName(value));
+    }
+    
+    @Override
+    public int compareStatuses(Item o1, Item o2) {
+        return (o1.getStatus().compareTo(o2.getStatus()));
     }
     
     @Override

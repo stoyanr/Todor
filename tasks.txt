@@ -2,9 +2,8 @@
 *Github
 *MVP
 *Local storage abstraction
-
-Status and priority of items
-Reorder / Sort / Drag & Drop
+*Status and priority of items
+*Sorting by priority and status
 
 User handling
 Tests
