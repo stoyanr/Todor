@@ -18,13 +18,19 @@
   xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
   <ui:style>
+    .headerPanel {
+    	margin: 5px 5px 5px 5px;
+    	width: 100%;
+    	text-align: right;
+    }
+    
     .buttonsPanel {
     	margin: 5px 5px 5px 5px;
     	width: 100%;
     }
     
     .buttonsPanel2 {
-        margin: 5px 5px 5px 5px;
+    	margin: 5px 5px 5px 5px;
     }
     
     .button {
@@ -50,17 +56,24 @@
     }
   </ui:style>
 
-  <g:VerticalPanel width="95%" horizontalAlignment="center">
+  <g:VerticalPanel width="95%">
+    <g:HorizontalPanel width="100%" horizontalAlignment="right"
+      addStyleNames="{style.headerPanel}" spacing="5">
+      <g:Label ui:field="nicknameLabel" width="95%"></g:Label>
+      <g:Anchor ui:field="signOutLink">Sign Out</g:Anchor>
+    </g:HorizontalPanel>
 
     <g:VerticalPanel width="100%" horizontalAlignment="center">
-      <g:HorizontalPanel addStyleNames="{style.buttonsPanel}" spacing="5">
+      <g:HorizontalPanel addStyleNames="{style.buttonsPanel}"
+        spacing="5">
         <g:TextBox ui:field="itemField" width="95%"></g:TextBox>
         <g:Button ui:field="addButton" addStyleNames="{style.button}">Add</g:Button>
       </g:HorizontalPanel>
 
       <c:CellTable ui:field="itemsTable" addStyleNames="{style.itemsTable}"></c:CellTable>
 
-      <g:HorizontalPanel addStyleNames="{style.buttonsPanel2}" spacing="5">
+      <g:HorizontalPanel addStyleNames="{style.buttonsPanel2}"
+        spacing="5">
         <g:Button ui:field="saveButton" addStyleNames="{style.button}">Save</g:Button>
         <g:Button ui:field="clearAllButton" addStyleNames="{style.button}">Clear All</g:Button>
       </g:HorizontalPanel>

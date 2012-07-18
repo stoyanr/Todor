@@ -29,6 +29,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>loginService</servlet-name>
+    <servlet-class>com.stoyanr.todo.server.LoginServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>loginService</servlet-name>
+    <url-pattern>/todo/login</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>SystemServiceServlet</servlet-name>
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>

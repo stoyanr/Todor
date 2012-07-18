@@ -23,12 +23,13 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 public class Todo implements EntryPoint {
 
-    private final ItemsServiceAsync svc = GWT.create(ItemsService.class);
+    private final ItemsServiceAsync itemsSvc = GWT.create(ItemsService.class);
+    private final LoginServiceAsync loginSvc = GWT.create(LoginService.class);
 
     @Override
     public void onModuleLoad() {
         HandlerManager eventBus = new HandlerManager(null);
-        AppController appCtrl = new AppController(svc, eventBus);
+        AppController appCtrl = new AppController(itemsSvc, loginSvc, eventBus);
         appCtrl.go(RootPanel.get());
     }
 }

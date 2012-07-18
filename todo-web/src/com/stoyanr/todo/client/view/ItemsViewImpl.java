@@ -34,14 +34,17 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
+import com.stoyanr.todo.model.UserAccount;
 
 public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
 
@@ -62,6 +65,10 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
         .create(ItemsViewUiBinder.class);
 
     @UiField
+    Label nicknameLabel;
+    @UiField
+    Anchor signOutLink;
+    @UiField
     TextBox itemField;
     @UiField
     Button addButton;
@@ -81,8 +88,12 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
     private ListDataProvider<T> dataProvider;
     private Presenter<T> presenter;
 
-    public ItemsViewImpl(List<String> priorityNames, List<String> statusNames) {
+    public ItemsViewImpl(UserAccount userAccount, List<String> priorityNames,
+        List<String> statusNames) {
         initWidget(uiBinder.createAndBindUi(this));
+
+        nicknameLabel.setText(userAccount.getNickname());
+        signOutLink.setHref(userAccount.getLogoutUrl());
 
         addButton.setFocus(true);
 
@@ -115,10 +126,10 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
         itemsTable.addColumnSortHandler(idHandler);
         itemsTable.addColumnSortHandler(prioHandler);
         itemsTable.addColumnSortHandler(statusHandler);
-        
+
         itemsTable.getColumnSortList().push(idColumn);
     }
-    
+
     private Column<T, String> createIdColumn() {
         Column<T, String> col = new Column<T, String>(new TextCell()) {
 
@@ -209,7 +220,7 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
         col.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         return col;
     }
-    
+
     private ListHandler<T> createIdHandler(Column<T, String> col, List<T> list) {
         ListHandler<T> idHandler = new ListHandler<T>(list);
         idHandler.setComparator(col, new Comparator<T>() {
