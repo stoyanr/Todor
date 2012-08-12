@@ -18,13 +18,15 @@ package com.stoyanr.todo.model;
 
 import java.io.Serializable;
 
-import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @SuppressWarnings("serial")
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class Item implements Serializable {
 
     public enum Priority {
@@ -36,8 +38,12 @@ public class Item implements Serializable {
     }
 
     @PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
+    private String key;
     @Persistent
-    private Long id;
+    @Extension(vendorName = "datanucleus", key = "gae.pk-name", value = "true")
+    private String id;
     @Persistent
     private String text;
     @Persistent
@@ -46,18 +52,28 @@ public class Item implements Serializable {
     private Status status;
 
     public Item() {
-        this(-1, "", Priority.MEDIUM, Status.NEW);
+        this(null, -1, "(Empty)", Priority.MEDIUM, Status.NEW);
     }
 
-    public Item(long id, String text, Priority priority, Status status) {
-        this.id = id;
+    public Item(String key, long id, String text, Priority priority,
+        Status status) {
+        assert (id >= -1);
+        assert (text != null);
+        assert (priority != null);
+        assert (status != null);
+        this.key = key;
+        this.id = String.valueOf(id);
         this.text = text;
         this.priority = priority;
         this.status = status;
     }
 
+    public String getKey() {
+        return key;
+    }
+
     public long getId() {
-        return id;
+        return Long.valueOf(id);
     }
 
     public String getText() {
@@ -65,6 +81,7 @@ public class Item implements Serializable {
     }
 
     public void setText(String text) {
+        assert (text != null);
         this.text = text;
     }
 
@@ -73,6 +90,7 @@ public class Item implements Serializable {
     }
 
     public void setPriority(Priority priority) {
+        assert (priority != null);
         this.priority = priority;
     }
 
@@ -81,7 +99,14 @@ public class Item implements Serializable {
     }
 
     public void setStatus(Status status) {
+        assert (status != null);
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return id + ":" + text + ":" + priority.toString() + ":"
+            + status.toString();
     }
 
 }

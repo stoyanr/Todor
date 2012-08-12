@@ -4,8 +4,13 @@
 *Local storage abstraction
 *Status and priority of items
 *Sorting by priority and status
+*User handling
 
-User handling
-Tests
-Web workers
-Database on backend
+Persistence
+Enter hits Add button
+Additional item properties - description, creation date, update date
+Local sign-in
+Layout
+Tests on GAE
+JUnit Tests
+Maven build

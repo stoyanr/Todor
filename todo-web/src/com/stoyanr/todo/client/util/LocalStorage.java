@@ -22,7 +22,7 @@ import com.google.gwt.storage.client.Storage;
 
 public class LocalStorage {
 
-    private final Storage storage = null; // Storage.getLocalStorageIfSupported();
+    private final Storage storage = Storage.getLocalStorageIfSupported();
 
     public boolean isPresent() {
         return (storage != null);

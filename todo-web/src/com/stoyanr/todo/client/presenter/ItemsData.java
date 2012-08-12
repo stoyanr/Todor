@@ -40,7 +40,7 @@ public class ItemsData {
 
     public ItemsData(List<Item> items) {
         this.items = items;
-        this.nextId = 0;
+        this.nextId = 1;
         this.dirty = false;
         this.lastSaved = new Date(0);
         loadFromStorage();
@@ -63,7 +63,7 @@ public class ItemsData {
     }
 
     public void addItem(String text) {
-        Item item = new Item(nextId, text, Priority.MEDIUM, Status.NEW);
+        Item item = new Item(null, nextId, text, Priority.MEDIUM, Status.NEW);
         items.add(item);
         saveItemToStorage(item);
         nextId++;

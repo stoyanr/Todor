@@ -17,17 +17,22 @@
 package com.stoyanr.todo.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
 
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.stoyanr.todo.client.ItemsService;
 import com.stoyanr.todo.model.Item;
+import com.stoyanr.todo.model.Document;
 
 @SuppressWarnings("serial")
 public class ItemsServiceImpl extends RemoteServiceServlet implements
@@ -36,54 +41,84 @@ public class ItemsServiceImpl extends RemoteServiceServlet implements
     private static final PersistenceManagerFactory PMF = JDOHelper
         .getPersistenceManagerFactory("transactions-optional");
 
-    private Date lastSaved = new Date(0);
-
     @Override
     public Item[] loadItems() {
-        PersistenceManager pm = PMF.getPersistenceManager();
-        try {
-            return getPersistedItems(pm).toArray(new Item[] {});
-        } finally {
-            pm.close();
+        List<Item> items = new ArrayList<Item>();
+        User user = getUser();
+        assert (user != null);
+        Document doc = getPersistedDocument(user.getNickname());
+        if (doc != null) {
+            items = doc.getItems();
+            assert (items != null);
         }
+        return items.toArray(new Item[items.size()]);
     }
 
     @Override
     public Date saveItems(Item[] items) throws IllegalArgumentException {
-        PersistenceManager pm = PMF.getPersistenceManager();
-        try {
-            deletePersistedItems(pm);
-            for (Item item : items) {
-                item.setText(escapeHtml(item.getText()));
-                persistItem(pm, item);
-            }
-        } finally {
-            pm.close();
+        escapeItemTexts(items);
+        User user = getUser();
+        assert (user != null);
+        Document doc = getPersistedDocument(user.getNickname());
+        List<Item> itemsx = Arrays.asList(items);
+        Date lastSaved = new Date();
+        if (doc != null) {
+            doc.setItems(itemsx);
+            doc.setLastSaved(lastSaved);
+        } else {
+            doc = new Document(user.getNickname(), itemsx, lastSaved);
         }
-        lastSaved = new Date();
+        persistDocument(doc);
         return lastSaved;
     }
 
     @Override
     public Date getLastSaved() {
+        Date lastSaved = new Date(0);
+        User user = getUser();
+        assert (user != null);
+        Document doc = getPersistedDocument(user.getNickname());
+        if (doc != null) {
+            lastSaved = doc.getLastSaved();
+            assert (lastSaved != null);
+        }
         return lastSaved;
     }
 
-    @SuppressWarnings("unchecked")
-    private static List<Item> getPersistedItems(PersistenceManager pm) {
-        List<Item> items = new ArrayList<Item>();
-        Query q = pm.newQuery(Item.class);
-        q.setOrdering("id");
-        items = (List<Item>) q.execute();
-        return items;
+    private static User getUser() {
+        UserService userService = UserServiceFactory.getUserService();
+        assert (userService != null);
+        return userService.getCurrentUser();
     }
 
-    private static void persistItem(PersistenceManager pm, Item item) {
-        pm.makePersistent(item);
+    private static void persistDocument(Document doc) {
+        PersistenceManager pm = PMF.getPersistenceManager();
+        try {
+            pm.makePersistent(doc);
+        } finally {
+            pm.close();
+        }
     }
 
-    private static void deletePersistedItems(PersistenceManager pm) {
-        pm.deletePersistentAll(getPersistedItems(pm));
+    private static Document getPersistedDocument(String userId) {
+        PersistenceManager pm = PMF.getPersistenceManager();
+        Document doc = null;
+        try {
+            Document docx = pm.getObjectById(Document.class, userId);
+            assert (docx != null);
+            doc = pm.detachCopy(docx);
+        } catch (JDOObjectNotFoundException e) {
+            // Do nothing
+        } finally {
+            pm.close();
+        }
+        return doc;
+    }
+
+    private static void escapeItemTexts(Item[] items) {
+        for (Item item : items) {
+            item.setText(escapeHtml(item.getText()));
+        }
     }
 
     /**
