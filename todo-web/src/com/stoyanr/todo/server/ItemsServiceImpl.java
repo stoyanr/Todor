@@ -20,30 +20,45 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.stoyanr.todo.client.ItemsService;
 import com.stoyanr.todo.model.Item;
-import com.stoyanr.todo.model.Item.Priority;
-import com.stoyanr.todo.model.Item.Status;
 
 @SuppressWarnings("serial")
 public class ItemsServiceImpl extends RemoteServiceServlet implements
     ItemsService {
 
-    private final List<Item> items = new ArrayList<Item>();
+    private static final PersistenceManagerFactory PMF = JDOHelper
+        .getPersistenceManagerFactory("transactions-optional");
+
     private Date lastSaved = new Date(0);
 
     @Override
     public Item[] loadItems() {
-        return this.items.toArray(new Item[] {});
+        PersistenceManager pm = PMF.getPersistenceManager();
+        try {
+            return getPersistedItems(pm).toArray(new Item[] {});
+        } finally {
+            pm.close();
+        }
     }
 
     @Override
     public Date saveItems(Item[] items) throws IllegalArgumentException {
-        this.items.clear();
-        for (Item item : items) {
-            this.items.add(new Item(item.getId(), escapeHtml(item.getText()), 
-                Priority.MEDIUM, Status.NEW));
+        PersistenceManager pm = PMF.getPersistenceManager();
+        try {
+            deletePersistedItems(pm);
+            for (Item item : items) {
+                item.setText(escapeHtml(item.getText()));
+                persistItem(pm, item);
+            }
+        } finally {
+            pm.close();
         }
         lastSaved = new Date();
         return lastSaved;
@@ -52,6 +67,23 @@ public class ItemsServiceImpl extends RemoteServiceServlet implements
     @Override
     public Date getLastSaved() {
         return lastSaved;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Item> getPersistedItems(PersistenceManager pm) {
+        List<Item> items = new ArrayList<Item>();
+        Query q = pm.newQuery(Item.class);
+        q.setOrdering("id");
+        items = (List<Item>) q.execute();
+        return items;
+    }
+
+    private static void persistItem(PersistenceManager pm, Item item) {
+        pm.makePersistent(item);
+    }
+
+    private static void deletePersistedItems(PersistenceManager pm) {
+        pm.deletePersistentAll(getPersistedItems(pm));
     }
 
     /**

@@ -18,7 +18,13 @@ package com.stoyanr.todo.model;
 
 import java.io.Serializable;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
 @SuppressWarnings("serial")
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Item implements Serializable {
 
     public enum Priority {
@@ -29,9 +35,14 @@ public class Item implements Serializable {
         NEW, IN_PROGRESS, FINISHED
     }
 
-    private long id;
+    @PrimaryKey
+    @Persistent
+    private Long id;
+    @Persistent
     private String text;
+    @Persistent
     private Priority priority;
+    @Persistent
     private Status status;
 
     public Item() {
