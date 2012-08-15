@@ -20,10 +20,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.stoyanr.todo.client.DocumentServiceAsync;
+import com.stoyanr.todo.client.util.LocalStorage;
 import com.stoyanr.todo.client.view.ItemsView;
 import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
@@ -34,7 +35,7 @@ import com.stoyanr.todo.model.UserAccount;
 public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
 
     private final DocumentServiceAsync svc;
-    private final HandlerManager eventBus;
+    private final Storage storage;
     private final UserAccount userAccount;
     private final ItemsView<Item> view;
     private DocumentData data;
@@ -43,10 +44,10 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
     private static final String[] STATUS_NAMES = { "New", "In Progress",
         "Finished" };
 
-    public DocumentPresenter(DocumentServiceAsync svc, HandlerManager eventBus,
+    public DocumentPresenter(DocumentServiceAsync svc, Storage storage,
         UserAccount userAccount, ItemsView<Item> view) {
         this.svc = svc;
-        this.eventBus = eventBus;
+        this.storage = storage;
         this.userAccount = userAccount;
         this.view = view;
         this.view.setPresenter(this);
@@ -132,8 +133,9 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
     }
 
     private void initializeDocument() {
-        data = new DocumentData(new Document(userAccount.getUserId(),
-            view.getData(), new Date(0)));
+        Document doc = new Document(userAccount.getUserId(), view.getData(),
+            new Date(0));
+        data = new DocumentData(new LocalStorage(storage), doc);
         svc.loadDocument(new LoadAsyncCallback());
     }
 

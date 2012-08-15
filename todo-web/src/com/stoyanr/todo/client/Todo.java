@@ -18,18 +18,18 @@ package com.stoyanr.todo.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class Todo implements EntryPoint {
 
     private final DocumentServiceAsync itemsSvc = GWT.create(DocumentService.class);
     private final LoginServiceAsync loginSvc = GWT.create(LoginService.class);
+    private final Storage storage = Storage.getLocalStorageIfSupported();
 
     @Override
     public void onModuleLoad() {
-        HandlerManager eventBus = new HandlerManager(null);
-        AppController appCtrl = new AppController(itemsSvc, loginSvc, eventBus);
+        AppController appCtrl = new AppController(itemsSvc, loginSvc, storage);
         appCtrl.go(RootPanel.get());
     }
 }

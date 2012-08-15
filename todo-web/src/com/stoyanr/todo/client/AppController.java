@@ -22,7 +22,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -39,17 +39,17 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 
     private final DocumentServiceAsync itemsSvc;
     private final LoginServiceAsync loginSvc;
-    private final HandlerManager eventBus;
+    private final Storage storage;
     private HasWidgets container;
     private ItemsViewImpl<Item> itemsView = null;
     private LoginViewImpl loginView = null;
     private UserAccount userAccount;
 
     public AppController(DocumentServiceAsync itemsSvc,
-        LoginServiceAsync loginSvc, HandlerManager eventBus) {
+        LoginServiceAsync loginSvc, Storage storage) {
         this.itemsSvc = itemsSvc;
         this.loginSvc = loginSvc;
-        this.eventBus = eventBus;
+        this.storage = storage;
         bind();
     }
 
@@ -128,8 +128,8 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 
         @Override
         public void onSuccess() {
-            new DocumentPresenter(itemsSvc, eventBus, userAccount, getItemsView())
-                .go(container);
+            new DocumentPresenter(itemsSvc, storage, userAccount,
+                getItemsView()).go(container);
         }
     }
 }

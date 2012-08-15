@@ -2,7 +2,9 @@
 /*/.settings
 /*/gwt-unitCache
 /*/test-classes
+/*/www-test
 /*/war/todo
+/*/war/com.stoyanr.todo.Todo.JUnit
 /*/war/WEB-INF/appengine-generated
 /*/war/WEB-INF/classes
 /*/war/WEB-INF/deploy

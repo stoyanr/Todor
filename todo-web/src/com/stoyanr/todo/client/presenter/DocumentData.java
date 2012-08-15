@@ -32,14 +32,15 @@ public class DocumentData {
     private static final String NEXT_ID_KEY = "count";
     private static final String DIRTY_KEY = "dirty";
 
-    private Document document;
+    private final LocalStorage storage;
+    private final Document document;
     private long nextId;
     private boolean dirty;
 
-    private final LocalStorage storage = new LocalStorage();
-
-    public DocumentData(Document document) {
+    public DocumentData(LocalStorage storage, Document document) {
+        assert (storage != null);
         assert (document != null);
+        this.storage = storage;
         this.document = document;
         this.nextId = 1;
         this.dirty = false;
@@ -48,7 +49,7 @@ public class DocumentData {
     }
 
     private void saveDocumentToStorageOnCreation() {
-        if (!loadDocumentFromStorage()) {
+        if (storage.isPresent() && !loadDocumentFromStorage()) {
             saveDocumentToStorage();
         }
     }
