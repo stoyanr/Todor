@@ -27,7 +27,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import com.stoyanr.todo.client.presenter.ItemsPresenter;
+import com.stoyanr.todo.client.presenter.DocumentPresenter;
 import com.stoyanr.todo.client.presenter.Presenter;
 import com.stoyanr.todo.client.view.ItemsView;
 import com.stoyanr.todo.client.view.ItemsViewImpl;
@@ -37,7 +37,7 @@ import com.stoyanr.todo.model.UserAccount;
 
 public class AppController implements Presenter, ValueChangeHandler<String> {
 
-    private final ItemsServiceAsync itemsSvc;
+    private final DocumentServiceAsync itemsSvc;
     private final LoginServiceAsync loginSvc;
     private final HandlerManager eventBus;
     private HasWidgets container;
@@ -45,7 +45,7 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
     private LoginViewImpl loginView = null;
     private UserAccount userAccount;
 
-    public AppController(ItemsServiceAsync itemsSvc,
+    public AppController(DocumentServiceAsync itemsSvc,
         LoginServiceAsync loginSvc, HandlerManager eventBus) {
         this.itemsSvc = itemsSvc;
         this.loginSvc = loginSvc;
@@ -105,8 +105,8 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 
     private ItemsView<Item> getItemsView() {
         if (itemsView == null) {
-            List<String> priorityNames = ItemsPresenter.getPriorityNames();
-            List<String> statusNames = ItemsPresenter.getStatusNames();
+            List<String> priorityNames = DocumentPresenter.getPriorityNames();
+            List<String> statusNames = DocumentPresenter.getStatusNames();
             itemsView = new ItemsViewImpl<Item>(userAccount, priorityNames,
                 statusNames);
         }
@@ -128,7 +128,7 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 
         @Override
         public void onSuccess() {
-            new ItemsPresenter(itemsSvc, eventBus, getItemsView())
+            new DocumentPresenter(itemsSvc, eventBus, userAccount, getItemsView())
                 .go(container);
         }
     }

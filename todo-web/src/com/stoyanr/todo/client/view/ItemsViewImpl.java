@@ -87,7 +87,7 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
 
     private ListDataProvider<T> dataProvider;
     private Presenter<T> presenter;
-
+    
     public ItemsViewImpl(UserAccount userAccount, List<String> priorityNames,
         List<String> statusNames) {
         initWidget(uiBinder.createAndBindUi(this));

@@ -23,26 +23,31 @@ import java.util.List;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.stoyanr.todo.client.ItemsServiceAsync;
+import com.stoyanr.todo.client.DocumentServiceAsync;
 import com.stoyanr.todo.client.view.ItemsView;
+import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
 import com.stoyanr.todo.model.Item.Priority;
 import com.stoyanr.todo.model.Item.Status;
+import com.stoyanr.todo.model.UserAccount;
 
-public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
+public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
 
-    private final ItemsServiceAsync svc;
+    private final DocumentServiceAsync svc;
     private final HandlerManager eventBus;
+    private final UserAccount userAccount;
     private final ItemsView<Item> view;
-    private ItemsData data;
-    
-    private static final String[] PRIO_NAMES = { "High", "Medium", "Low" };
-    private static final String[] STATUS_NAMES = { "New", "In Progress", "Finished" };
+    private DocumentData data;
 
-    public ItemsPresenter(ItemsServiceAsync svc, HandlerManager eventBus,
-        ItemsView<Item> view) {
+    private static final String[] PRIO_NAMES = { "High", "Medium", "Low" };
+    private static final String[] STATUS_NAMES = { "New", "In Progress",
+        "Finished" };
+
+    public DocumentPresenter(DocumentServiceAsync svc, HandlerManager eventBus,
+        UserAccount userAccount, ItemsView<Item> view) {
         this.svc = svc;
         this.eventBus = eventBus;
+        this.userAccount = userAccount;
         this.view = view;
         this.view.setPresenter(this);
     }
@@ -51,7 +56,7 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     public void go(final HasWidgets container) {
         container.clear();
         container.add(view.asWidget());
-        initializeItems();
+        initializeDocument();
     }
 
     @Override
@@ -75,7 +80,7 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     public String getId(Item item) {
         return String.valueOf(item.getId());
     }
-    
+
     @Override
     public int compareIds(Item o1, Item o2) {
         return (int) (o1.getId() - o2.getId());
@@ -90,7 +95,7 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     public void updateText(Item item, String value) {
         data.updateItem(item, value);
     }
-    
+
     @Override
     public String getPriority(Item item) {
         return getPriorityName(item.getPriority());
@@ -115,63 +120,48 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     public void updateStatus(Item item, String value) {
         data.updateItem(item, getStatusByName(value));
     }
-    
+
     @Override
     public int compareStatuses(Item o1, Item o2) {
         return (o1.getStatus().compareTo(o2.getStatus()));
     }
-    
+
     @Override
     public void save() {
-        saveItemsToServer();
+        saveDocument();
     }
 
-    private void initializeItems() {
-        data = new ItemsData(view.getData());
-        svc.getLastSaved(new InitializeAsyncCallback());
+    private void initializeDocument() {
+        data = new DocumentData(new Document(userAccount.getUserId(),
+            view.getData(), new Date(0)));
+        svc.loadDocument(new LoadAsyncCallback());
     }
 
-    final class InitializeAsyncCallback implements AsyncCallback<Date> {
+    final class LoadAsyncCallback implements AsyncCallback<Document> {
 
         @Override
         public void onFailure(Throwable caught) {
         }
 
         @Override
-        public void onSuccess(Date result) {
-            if (result.after(data.getLastSaved()) && result.after(new Date(0))) {
-                loadItemsFromServer();
-                data.setLastSaved(result);
+        public void onSuccess(Document r) {
+            Date lastSaved = data.getDocument().getLastSaved();
+            if (r != null && r.getLastSaved().after(lastSaved)) {
+                data.setDocument(r);
+                data.setDirty(false);
             }
         }
     }
 
-    private void loadItemsFromServer() {
-        svc.loadItems(new LoadAsyncCallback());
-    }
-
-    final class LoadAsyncCallback implements AsyncCallback<Item[]> {
-
-        @Override
-        public void onFailure(Throwable caught) {
-        }
-
-        @Override
-        public void onSuccess(Item[] result) {
-            data.setItemsFromArray(result);
-            data.setDirty(false);
-        }
-    }
-
-    private void saveItemsToServer() {
+    private void saveDocument() {
         if (data.isDirty()) {
-            svc.saveItems(data.getItemsAsArray(), new SaveAsyncCallback());
+            svc.saveDocument(data.getDocument(), new SaveAsyncCallback());
         } else {
             view.onSaveSuccess();
         }
     }
 
-    final class SaveAsyncCallback implements AsyncCallback<Date> {
+    final class SaveAsyncCallback implements AsyncCallback<Document> {
 
         @Override
         public void onFailure(Throwable caught) {
@@ -179,9 +169,9 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
         }
 
         @Override
-        public void onSuccess(Date result) {
+        public void onSuccess(Document result) {
+            data.setDocument(result);
             data.setDirty(false);
-            data.setLastSaved(result);
             view.onSaveSuccess();
         }
     }
@@ -197,11 +187,11 @@ public class ItemsPresenter implements Presenter, ItemsView.Presenter<Item> {
     private static String getPriorityName(Priority priority) {
         return PRIO_NAMES[priority.ordinal()];
     }
-    
+
     private static Priority getPriorityByName(String name) {
         return Priority.values()[getFirstIndex(name, PRIO_NAMES)];
     }
-    
+
     private static String getStatusName(Status status) {
         return STATUS_NAMES[status.ordinal()];
     }

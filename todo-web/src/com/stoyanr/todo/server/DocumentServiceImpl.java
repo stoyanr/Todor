@@ -16,8 +16,6 @@
 
 package com.stoyanr.todo.server;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -30,59 +28,42 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.stoyanr.todo.client.ItemsService;
-import com.stoyanr.todo.model.Item;
+import com.stoyanr.todo.client.DocumentService;
 import com.stoyanr.todo.model.Document;
+import com.stoyanr.todo.model.Item;
 
 @SuppressWarnings("serial")
-public class ItemsServiceImpl extends RemoteServiceServlet implements
-    ItemsService {
+public class DocumentServiceImpl extends RemoteServiceServlet implements
+    DocumentService {
 
     private static final PersistenceManagerFactory PMF = JDOHelper
         .getPersistenceManagerFactory("transactions-optional");
 
     @Override
-    public Item[] loadItems() {
-        List<Item> items = new ArrayList<Item>();
+    public Document loadDocument() {
         User user = getUser();
         assert (user != null);
-        Document doc = getPersistedDocument(user.getNickname());
-        if (doc != null) {
-            items = doc.getItems();
-            assert (items != null);
-        }
-        return items.toArray(new Item[items.size()]);
+        Document doc = getPersistedDocument(user.getUserId());
+        return doc;
     }
 
     @Override
-    public Date saveItems(Item[] items) throws IllegalArgumentException {
-        escapeItemTexts(items);
+    public Document saveDocument(Document document) throws IllegalArgumentException {
+        escapeItemTexts(document.getItems());
         User user = getUser();
         assert (user != null);
-        Document doc = getPersistedDocument(user.getNickname());
-        List<Item> itemsx = Arrays.asList(items);
+        if (!user.getUserId().equals(document.getUserId()))
+            throw new IllegalArgumentException("Received document for wrong user.");
+        Document doc = getPersistedDocument(user.getUserId());
         Date lastSaved = new Date();
         if (doc != null) {
-            doc.setItems(itemsx);
+            doc.setItems(document.getItems());
             doc.setLastSaved(lastSaved);
         } else {
-            doc = new Document(user.getNickname(), itemsx, lastSaved);
+            doc = document;
         }
         persistDocument(doc);
-        return lastSaved;
-    }
-
-    @Override
-    public Date getLastSaved() {
-        Date lastSaved = new Date(0);
-        User user = getUser();
-        assert (user != null);
-        Document doc = getPersistedDocument(user.getNickname());
-        if (doc != null) {
-            lastSaved = doc.getLastSaved();
-            assert (lastSaved != null);
-        }
-        return lastSaved;
+        return doc;
     }
 
     private static User getUser() {
@@ -91,10 +72,10 @@ public class ItemsServiceImpl extends RemoteServiceServlet implements
         return userService.getCurrentUser();
     }
 
-    private static void persistDocument(Document doc) {
+    private static void persistDocument(Document document) {
         PersistenceManager pm = PMF.getPersistenceManager();
         try {
-            pm.makePersistent(doc);
+            pm.makePersistent(document);
         } finally {
             pm.close();
         }
@@ -115,7 +96,7 @@ public class ItemsServiceImpl extends RemoteServiceServlet implements
         return doc;
     }
 
-    private static void escapeItemTexts(Item[] items) {
+    private static void escapeItemTexts(List<Item> items) {
         for (Item item : items) {
             item.setText(escapeHtml(item.getText()));
         }

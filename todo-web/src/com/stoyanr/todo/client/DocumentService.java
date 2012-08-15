@@ -16,17 +16,15 @@
 
 package com.stoyanr.todo.client;
 
-import java.util.Date;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.stoyanr.todo.model.Item;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.stoyanr.todo.model.Document;
 
-public interface ItemsServiceAsync {
+@RemoteServiceRelativePath("document")
+public interface DocumentService extends RemoteService {
 
-    void loadItems(AsyncCallback<Item[]> callback)
-        throws IllegalArgumentException;
+    Document loadDocument();
 
-    void saveItems(Item[] items, AsyncCallback<Date> callback);
-
-    void getLastSaved(AsyncCallback<Date> callback);
+    Document saveDocument(Document document) throws IllegalArgumentException;
 }

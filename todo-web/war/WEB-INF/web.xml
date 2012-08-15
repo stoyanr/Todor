@@ -19,13 +19,13 @@
   </welcome-file-list>
 
   <servlet>
-    <servlet-name>itemsServlet</servlet-name>
-    <servlet-class>com.stoyanr.todo.server.ItemsServiceImpl</servlet-class>
+    <servlet-name>documentService</servlet-name>
+    <servlet-class>com.stoyanr.todo.server.DocumentServiceImpl</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>itemsServlet</servlet-name>
-    <url-pattern>/todo/items</url-pattern>
+    <servlet-name>documentService</servlet-name>
+    <url-pattern>/todo/document</url-pattern>
   </servlet-mapping>
 
   <servlet>

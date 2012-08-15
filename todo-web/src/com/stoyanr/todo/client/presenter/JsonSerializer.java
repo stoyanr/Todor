@@ -16,10 +16,14 @@
 
 package com.stoyanr.todo.client.presenter;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
+import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
 import com.stoyanr.todo.model.Item.Priority;
 import com.stoyanr.todo.model.Item.Status;
@@ -33,13 +37,23 @@ public class JsonSerializer {
     private static final String TEXT = "text";
     private static final String PRIORITY = "priority";
     private static final String STATUS = "status";
+    private static final String USER_ID = "userId";
+    private static final String LAST_SAVED = "lastSaved";
     
     public static String toString(Item item) {
         return toJson(item).toString();
     }
     
-    public static Item fromString(String string) {
-        return fromJson(JSONParser.parseStrict(string).isObject());
+    public static Item getItem(String string) {
+        return getItem(JSONParser.parseStrict(string).isObject());
+    }
+
+    public static String toString(Document document) {
+        return toJson(document).toString();
+    }
+    
+    public static Document getDocument(String string) {
+        return getDocument(JSONParser.parseStrict(string).isObject());
     }
 
     public static JSONObject toJson(Item item) {
@@ -52,7 +66,7 @@ public class JsonSerializer {
         return result;
     }
 
-    public static Item fromJson(JSONObject value) {
+    public static Item getItem(JSONObject value) {
         String key = fromNullableValue(value.get(KEY).isString().stringValue());
         long id = (long) value.get(ID).isNumber().doubleValue();
         String text = value.get(TEXT).isString().stringValue();
@@ -61,6 +75,19 @@ public class JsonSerializer {
         Status status = Status.valueOf(value.get(STATUS).isString()
             .stringValue());
         return new Item(key, id, text, priority, status);
+    }
+
+    public static JSONObject toJson(Document document) {
+        JSONObject result = new JSONObject();
+        result.put(USER_ID, new JSONString(document.getUserId()));
+        result.put(LAST_SAVED, new JSONNumber(document.getLastSaved().getTime()));
+        return result;
+    }
+
+    public static Document getDocument(JSONObject value) {
+        String userId = value.get(USER_ID).isString().stringValue();
+        Date lastSaved = new Date((long) value.get(LAST_SAVED).isNumber().doubleValue());
+        return new Document(userId, new ArrayList<Item>(), lastSaved);
     }
 
     private static String toNullableValue(String value) {

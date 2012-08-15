@@ -31,14 +31,16 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
     public UserAccount login(String requestUri) {
         UserAccount userAccount = null;
         UserService userService = UserServiceFactory.getUserService();
+        assert (userService != null);
         User user = userService.getCurrentUser();
         if (user != null) {
             String logoutUrl = userService.createLogoutURL(requestUri);
-            userAccount = new UserAccount(user.getNickname(), user.getEmail(),
-                true, null, logoutUrl);
+            userAccount = new UserAccount(user.getUserId(), user.getNickname(),
+                user.getEmail(), true, null, logoutUrl);
         } else {
             String loginUrl = userService.createLoginURL(requestUri);
-            userAccount = new UserAccount(null, null, false, loginUrl, null);
+            userAccount = new UserAccount(null, null, null, false, loginUrl,
+                null);
         }
         return userAccount;
     }

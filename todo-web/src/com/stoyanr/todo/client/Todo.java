@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 public class Todo implements EntryPoint {
 
-    private final ItemsServiceAsync itemsSvc = GWT.create(ItemsService.class);
+    private final DocumentServiceAsync itemsSvc = GWT.create(DocumentService.class);
     private final LoginServiceAsync loginSvc = GWT.create(LoginService.class);
 
     @Override

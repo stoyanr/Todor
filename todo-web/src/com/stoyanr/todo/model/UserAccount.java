@@ -16,28 +16,33 @@
 
 package com.stoyanr.todo.model;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-@SuppressWarnings("serial")
-public class UserAccount implements Serializable {
+public class UserAccount implements IsSerializable {
 
+    private String userId;
     private String nickname;
     private String email;
     private boolean loggedIn;
     private String loginUrl;
     private String logoutUrl;
-    
+
     public UserAccount() {
-        this(null, null, false, null, null);
+        this(null, null, null, false, null, null);
     }
-    
-    public UserAccount(String nickname, String email, boolean loggedIn,
-        String loginUrl, String logoutUrl) {
+
+    public UserAccount(String userId, String nickname, String email,
+        boolean loggedIn, String loginUrl, String logoutUrl) {
+        this.userId = userId;
         this.nickname = nickname;
         this.email = email;
         this.loggedIn = loggedIn;
         this.loginUrl = loginUrl;
         this.logoutUrl = logoutUrl;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public String getNickname() {

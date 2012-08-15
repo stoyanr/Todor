@@ -5,12 +5,13 @@
 *Status and priority of items
 *Sorting by priority and status
 *User handling
+*Persistence
+*Document on client side
 
-Persistence
+JUnit Tests
+
 Enter hits Add button
 Additional item properties - description, creation date, update date
-Local sign-in
+
 Layout
-Tests on GAE
-JUnit Tests
 Maven build
