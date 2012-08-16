@@ -8,8 +8,8 @@
 *Persistence
 *Document on client side
 *JUnit Tests
+*Enter hits Add button
 
-Enter hits Add button
 Additional item properties - creation date, update date
 Maven build
 Layout
