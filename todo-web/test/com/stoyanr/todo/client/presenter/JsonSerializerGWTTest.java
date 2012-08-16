@@ -16,19 +16,24 @@
 
 package com.stoyanr.todo.client.presenter;
 
+import static com.stoyanr.todo.client.utils.TestUtils.ITEM_0;
+import static com.stoyanr.todo.client.utils.TestUtils.ITEM_1;
+import static com.stoyanr.todo.client.utils.TestUtils.NOW;
+import static com.stoyanr.todo.client.utils.TestUtils.THEN;
+import static com.stoyanr.todo.client.utils.TestUtils.U0;
+import static com.stoyanr.todo.client.utils.TestUtils.U1;
+
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.junit.client.GWTTestCase;
-import com.stoyanr.todo.client.util.TestUtils;
+import com.stoyanr.todo.client.utils.TestUtils;
 import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
-import com.stoyanr.todo.model.Item.Priority;
-import com.stoyanr.todo.model.Item.Status;
 
 public class JsonSerializerGWTTest extends GWTTestCase {
     
@@ -36,9 +41,9 @@ public class JsonSerializerGWTTest extends GWTTestCase {
     
     // @formatter:off
     private static Object[][] PARAMETERS = new Object[][] { 
-        { new Document("", Arrays.asList(new Item()), new Date(0)) }, 
-        { new Document("me", Arrays.asList(new Item(null, 0, "xxx", Priority.MEDIUM, Status.NEW)), new Date()) }, 
-        { new Document("you", Arrays.asList(new Item("abcd1234", 1, "!@#$%^&*()_+{}|[]\\:\";'<>,.?/+-_", Priority.HIGH, Status.IN_PROGRESS)), new Date()) }, 
+        { new Document(U0, new ArrayList<Item>(), THEN) }, 
+        { new Document(U0, Arrays.asList(ITEM_0), NOW) }, 
+        { new Document(U1, Arrays.asList(ITEM_1), NOW) }, 
     };
     // @formatter:on
     

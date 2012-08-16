@@ -16,6 +16,11 @@
 
 package com.stoyanr.todo.client.presenter;
 
+import static com.stoyanr.todo.client.utils.TestUtils.ITEM_0;
+import static com.stoyanr.todo.client.utils.TestUtils.ITEM_1;
+import static com.stoyanr.todo.client.utils.TestUtils.NOW;
+import static com.stoyanr.todo.client.utils.TestUtils.THEN;
+import static com.stoyanr.todo.client.utils.TestUtils.U0;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -27,7 +32,6 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +40,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.stoyanr.todo.client.util.LocalStorage;
-import com.stoyanr.todo.client.util.TestUtils;
+import com.stoyanr.todo.client.utils.MockUtils;
+import com.stoyanr.todo.client.utils.TestUtils;
 import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
 import com.stoyanr.todo.model.Item.Priority;
@@ -46,17 +51,17 @@ import com.stoyanr.todo.model.Item.Status;
 public class DocumentDataTest {
 
     private final Document document;
-    
+
     private DocumentData data;
     private Document managed;
     private LocalStorage storage;
     private JsonSerializer serializer;
 
     // @formatter:off
-    private static Object[][] PARAMETERS = new Object[][] { 
-        { new Document("me", new ArrayList<Item>(), new Date(0)) }, 
-        { new Document("me", Arrays.asList(new Item(null, 0, "xxx", Priority.MEDIUM, Status.NEW)), new Date()) }, 
-        { new Document("me", Arrays.asList(new Item("abcd1234", 1, "!@#$%^&*()_+{}|[]\\:\";'<>,.?/+-_", Priority.HIGH, Status.IN_PROGRESS)), new Date()) }, 
+    private static final Object[][] PARAMETERS = new Object[][] { 
+        { new Document(U0, new ArrayList<Item>(), THEN) }, 
+        { new Document(U0, Arrays.asList(ITEM_0), NOW) }, 
+        { new Document(U0, Arrays.asList(ITEM_1), NOW) }, 
     };
     // @formatter:on
 
@@ -71,11 +76,11 @@ public class DocumentDataTest {
 
     @Before
     public void setUp() {
-        TestUtils.clearMockStorage();
-        TestUtils.clearMockSerializer();
-        storage = TestUtils.createMockStorage();
-        serializer = TestUtils.createMockSerializer();
-        managed = new Document("me", new ArrayList<Item>(), new Date(0));
+        MockUtils.clearMockStorage();
+        MockUtils.clearMockSerializer();
+        storage = MockUtils.createMockStorage();
+        serializer = MockUtils.createMockSerializer();
+        managed = new Document(U0, new ArrayList<Item>(), THEN);
         data = new DocumentData(managed, storage, serializer);
         verifyConstructorInvocations();
         assertEquals(0, data.getNextId());
@@ -85,7 +90,7 @@ public class DocumentDataTest {
     private void verifyConstructorInvocations() {
         verify(storage).isPresent();
         verify(serializer).toString(managed);
-        verify(storage).setStringValue(anyString(), eq("me"));
+        verify(storage).setStringValue(anyString(), eq(U0));
     }
 
     @Test
@@ -115,21 +120,22 @@ public class DocumentDataTest {
     public void testAddItem() {
         String text = getItemText();
         data.addItem(text);
-        Item item = new Item(null, 0, text, Priority.MEDIUM, Status.NEW); 
+        Item item = new Item(null, 0, text, Priority.MEDIUM, Status.NEW, NOW,
+            NOW);
         verifyAddItemInvocations(item);
         assertEquals(1, data.getDocument().getItems().size());
         TestUtils.assertItemEquals(item, data.getDocument().getItems().get(0));
         assertEquals(1, data.getNextId());
         assertEquals(true, data.isDirty());
     }
-    
+
     private void verifyAddItemInvocations(Item item) {
         verify(serializer).toString(any(Item.class));
         verify(storage).setStringValue(anyString(), eq("" + item.getId()));
         verify(storage).setLongValue(anyString(), eq(1L));
         verify(storage).setBooleanValue(anyString(), eq(true));
     }
-    
+
     @Test
     public void testUpdateItemText() {
         String text = getItemText();
@@ -137,7 +143,8 @@ public class DocumentDataTest {
         data.setDirty(false);
         String newText = text + " (x)";
         data.updateItem(data.getDocument().getItems().get(0), newText);
-        Item itemx = new Item(null, 0, newText, Priority.MEDIUM, Status.NEW); 
+        Item itemx = new Item(null, 0, newText, Priority.MEDIUM, Status.NEW,
+            NOW, NOW);
         verifyUpdateItemInvocations(itemx);
         assertUpdateItemResults(itemx);
     }
@@ -145,7 +152,8 @@ public class DocumentDataTest {
     @Test(expected = AssertionError.class)
     public void testUpdateItemTextError() {
         String text = getItemText();
-        Item item = new Item(null, 0, text, Priority.MEDIUM, Status.NEW); 
+        Item item = new Item(null, 0, text, Priority.MEDIUM, Status.NEW, NOW,
+            NOW);
         data.updateItem(item, text);
     }
 
@@ -155,29 +163,32 @@ public class DocumentDataTest {
         data.setDirty(false);
         Priority prio = Priority.LOW;
         data.updateItem(data.getDocument().getItems().get(0), prio);
-        Item itemx = new Item(null, 0, getItemText(), prio, Status.NEW); 
+        Item itemx = new Item(null, 0, getItemText(), prio, Status.NEW, NOW,
+            NOW);
         verifyUpdateItemInvocations(itemx);
         assertUpdateItemResults(itemx);
     }
-    
+
     @Test
     public void testUpdateItemStatus() {
         data.addItem(getItemText());
         data.setDirty(false);
         Status status = Status.IN_PROGRESS;
         data.updateItem(data.getDocument().getItems().get(0), status);
-        Item itemx = new Item(null, 0, getItemText(), Priority.MEDIUM, status); 
+        Item itemx = new Item(null, 0, getItemText(), Priority.MEDIUM, status,
+            NOW, NOW);
         verifyUpdateItemInvocations(itemx);
         assertUpdateItemResults(itemx);
     }
-    
+
     private void verifyUpdateItemInvocations(Item item) {
         verify(serializer, times(2)).toString(any(Item.class));
-        verify(storage, times(2)).setStringValue(anyString(), eq("" + item.getId()));
+        verify(storage, times(2)).setStringValue(anyString(),
+            eq("" + item.getId()));
         verify(storage, times(2)).setBooleanValue(anyString(), eq(true));
         verify(storage, times(1)).setBooleanValue(anyString(), eq(false));
     }
-    
+
     private void assertUpdateItemResults(Item item) {
         assertEquals(1, data.getDocument().getItems().size());
         TestUtils.assertItemEquals(item, data.getDocument().getItems().get(0));
@@ -193,11 +204,12 @@ public class DocumentDataTest {
         assertEquals(0, data.getDocument().getItems().size());
         assertEquals(true, data.isDirty());
     }
-    
+
     @Test(expected = AssertionError.class)
     public void testDeleteItemError() {
         String text = getItemText();
-        Item item = new Item(null, 0, text, Priority.MEDIUM, Status.NEW); 
+        Item item = new Item(null, 0, text, Priority.MEDIUM, Status.NEW, NOW,
+            NOW);
         data.deleteItem(item, 0);
     }
 
@@ -211,7 +223,7 @@ public class DocumentDataTest {
         assertEquals(0, data.getDocument().getItems().size());
         assertEquals(true, data.isDirty());
     }
-    
+
     private String getItemText() {
         String itemText = "";
         if (document.getItems().size() > 0) {

@@ -16,6 +16,10 @@
 
 package com.stoyanr.todo.client.presenter;
 
+import static com.stoyanr.todo.client.utils.TestUtils.ITEM_0;
+import static com.stoyanr.todo.client.utils.TestUtils.ITEM_2;
+import static com.stoyanr.todo.client.utils.TestUtils.NOW;
+import static com.stoyanr.todo.client.utils.TestUtils.U0;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -40,12 +44,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.stoyanr.todo.client.DocumentServiceAsync;
 import com.stoyanr.todo.client.util.LocalStorage;
-import com.stoyanr.todo.client.util.TestUtils;
+import com.stoyanr.todo.client.utils.MockUtils;
+import com.stoyanr.todo.client.utils.TestUtils;
 import com.stoyanr.todo.client.view.ItemsView;
 import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
-import com.stoyanr.todo.model.Item.Priority;
-import com.stoyanr.todo.model.Item.Status;
 
 @RunWith(value = Parameterized.class)
 public class DocumentPresenterTest {
@@ -62,8 +65,8 @@ public class DocumentPresenterTest {
 
     // @formatter:off
     private static Object[][] PARAMETERS = new Object[][] { 
-        { new Document("me", Arrays.asList(new Item(null, 0, "xxx", Priority.MEDIUM, Status.NEW)), new Date()), true }, 
-        { new Document("me", Arrays.asList(new Item(null, 1, "abc", Priority.HIGH, Status.IN_PROGRESS)), new Date()), false }, 
+        { new Document(U0, Arrays.asList(ITEM_0), NOW), true }, 
+        { new Document(U0, Arrays.asList(ITEM_2), NOW), false }, 
     };
     private LocalStorage storage;
     // @formatter:on
@@ -81,11 +84,11 @@ public class DocumentPresenterTest {
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() {
-        TestUtils.clearMockStorage();
-        TestUtils.clearMockSerializer();
-        storage = TestUtils.createMockStorage();
-        serializer = TestUtils.createMockSerializer();
-        managed = new Document("me", new ArrayList<Item>(), new Date(0));
+        MockUtils.clearMockStorage();
+        MockUtils.clearMockSerializer();
+        storage = MockUtils.createMockStorage();
+        serializer = MockUtils.createMockSerializer();
+        managed = new Document(U0, new ArrayList<Item>(), new Date(0));
         data = new DocumentData(managed, storage, serializer);
         svc = createMockService(success);
         view = (ItemsView<Item>) mock(ItemsView.class);

@@ -17,6 +17,7 @@
 package com.stoyanr.todo.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -50,22 +51,30 @@ public class Item implements Serializable {
     private Priority priority;
     @Persistent
     private Status status;
+    @Persistent
+    private Date created;
+    @Persistent
+    private Date updated;
 
     public Item() {
-        this(null, -1, "(Empty)", Priority.MEDIUM, Status.NEW);
+        this(null, -1, "(Empty)", Priority.MEDIUM, Status.NEW, new Date(), new Date());
     }
 
     public Item(String key, long id, String text, Priority priority,
-        Status status) {
+        Status status, Date created, Date updated) {
         assert (id >= -1);
         assert (text != null);
         assert (priority != null);
         assert (status != null);
+        assert (created != null);
+        assert (updated != null);
         this.key = key;
         this.id = String.valueOf(id);
         this.text = text;
         this.priority = priority;
         this.status = status;
+        this.created = created;
+        this.updated = updated;
     }
 
     public String getKey() {
@@ -102,11 +111,30 @@ public class Item implements Serializable {
         assert (status != null);
         this.status = status;
     }
+    
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        assert (created != null);
+        this.created = created;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        assert (updated != null);
+        this.updated = updated;
+    }
 
     @Override
     public String toString() {
         return id + ":" + text + ":" + priority.toString() + ":"
-            + status.toString();
+            + status.toString() + ":" + created.toString() + ":"
+            + updated.toString();
     }
 
 }

@@ -31,19 +31,21 @@ import com.stoyanr.todo.model.Item.Status;
 public class JsonSerializer {
 
     private static final String NULL = "NULL";
-    
+
     private static final String KEY = "key";
     private static final String ID = "id";
     private static final String TEXT = "text";
     private static final String PRIORITY = "priority";
     private static final String STATUS = "status";
+    private static final String CREATED = "created";
+    private static final String UPDATED = "updated";
     private static final String USER_ID = "userId";
     private static final String LAST_SAVED = "lastSaved";
-    
+
     public String toString(Item item) {
         return toJson(item).toString();
     }
-    
+
     public Item getItem(String string) {
         return getItem(JSONParser.parseStrict(string).isObject());
     }
@@ -51,7 +53,7 @@ public class JsonSerializer {
     public String toString(Document document) {
         return toJson(document).toString();
     }
-    
+
     public Document getDocument(String string) {
         return getDocument(JSONParser.parseStrict(string).isObject());
     }
@@ -63,6 +65,8 @@ public class JsonSerializer {
         result.put(TEXT, new JSONString(item.getText()));
         result.put(PRIORITY, new JSONString(item.getPriority().toString()));
         result.put(STATUS, new JSONString(item.getStatus().toString()));
+        result.put(CREATED, new JSONNumber(item.getCreated().getTime()));
+        result.put(UPDATED, new JSONNumber(item.getUpdated().getTime()));
         return result;
     }
 
@@ -74,28 +78,34 @@ public class JsonSerializer {
             .stringValue());
         Status status = Status.valueOf(value.get(STATUS).isString()
             .stringValue());
-        return new Item(key, id, text, priority, status);
+        Date created = new Date((long) value.get(CREATED).isNumber()
+            .doubleValue());
+        Date updated = new Date((long) value.get(UPDATED).isNumber()
+            .doubleValue());
+        return new Item(key, id, text, priority, status, created, updated);
     }
 
     public JSONObject toJson(Document document) {
         JSONObject result = new JSONObject();
         result.put(USER_ID, new JSONString(document.getUserId()));
-        result.put(LAST_SAVED, new JSONNumber(document.getLastSaved().getTime()));
+        result.put(LAST_SAVED,
+            new JSONNumber(document.getLastSaved().getTime()));
         return result;
     }
 
     public Document getDocument(JSONObject value) {
         String userId = value.get(USER_ID).isString().stringValue();
-        Date lastSaved = new Date((long) value.get(LAST_SAVED).isNumber().doubleValue());
+        Date lastSaved = new Date((long) value.get(LAST_SAVED).isNumber()
+            .doubleValue());
         return new Document(userId, new ArrayList<Item>(), lastSaved);
     }
 
     private String toNullableValue(String value) {
-        return (value != null)? value : NULL;
+        return (value != null) ? value : NULL;
     }
 
     private String fromNullableValue(String keyValue) {
-        return keyValue.equals(NULL)? null : keyValue;
+        return keyValue.equals(NULL) ? null : keyValue;
     }
 
 }

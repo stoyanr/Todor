@@ -16,6 +16,9 @@
 
 package com.stoyanr.todo.client.util;
 
+import static com.stoyanr.todo.client.utils.TestUtils.NOW;
+import static com.stoyanr.todo.client.utils.TestUtils.THEN;
+
 import java.util.Date;
 
 import org.junit.Before;
@@ -23,6 +26,7 @@ import org.junit.Test;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.storage.client.Storage;
+import com.stoyanr.todo.client.utils.TestUtils;
 
 // This test case succeeds only in production, Manual mode, 
 // since local storage is not supported in HtmlUnit browser
@@ -37,8 +41,8 @@ public class LocalStorageGWTTest extends GWTTestCase {
     }
     
     private static Object[][] PARAMETERS = new Object[][] { 
-        { "", 0L, false, new Date(0) }, 
-        { "xxx", 1L, true, new Date() } 
+        { "", 0L, false, THEN }, 
+        { "xxx", 1L, true, NOW } 
     };
 
     @Before
@@ -134,6 +138,6 @@ public class LocalStorageGWTTest extends GWTTestCase {
         assertEquals("", storage.getStringValue("s"));
         assertEquals(0, storage.getLongValue("l"));
         assertEquals(false, storage.getBooleanValue("b"));
-        assertEquals(new Date(0), storage.getDateValue("d"));
+        assertEquals(THEN, storage.getDateValue("d"));
     }
 }

@@ -129,6 +129,28 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
         return (o1.getStatus().compareTo(o2.getStatus()));
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public String getCreated(Item item) {
+        return item.getCreated().toLocaleString();
+    }
+
+    @Override
+    public int compareCreated(Item o1, Item o2) {
+        return (o1.getCreated().compareTo(o2.getCreated()));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public String getUpdated(Item item) {
+        return item.getUpdated().toLocaleString();
+    }
+
+    @Override
+    public int compareUpdated(Item o1, Item o2) {
+        return (o1.getUpdated().compareTo(o2.getUpdated()));
+    }
+
     @Override
     public void save() {
         saveDocument();

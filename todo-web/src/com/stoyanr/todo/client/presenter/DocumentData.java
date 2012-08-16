@@ -17,6 +17,7 @@
 package com.stoyanr.todo.client.presenter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.stoyanr.todo.client.util.LocalStorage;
@@ -87,7 +88,9 @@ public class DocumentData {
     public void addItem(String text) {
         assert (text != null);
         assert (!hasItemWithId(nextId));
-        Item item = new Item(null, nextId, text, Priority.MEDIUM, Status.NEW);
+        Date date = new Date();
+        Item item = new Item(null, nextId, text, Priority.MEDIUM, Status.NEW, 
+            date, date);
         document.getItems().add(item);
         saveItemToStorage(item);
         nextId++;
@@ -99,6 +102,7 @@ public class DocumentData {
         assert (item != null && hasItem(item));
         assert (text != null);
         item.setText(text);
+        item.setUpdated(new Date());
         saveItemToStorage(item);
         setDirty(true);
     }
@@ -107,6 +111,7 @@ public class DocumentData {
         assert (item != null && hasItem(item));
         assert (prio != null);
         item.setPriority(prio);
+        item.setUpdated(new Date());
         saveItemToStorage(item);
         setDirty(true);
     }
@@ -115,6 +120,7 @@ public class DocumentData {
         assert (item != null && hasItem(item));
         assert (status != null);
         item.setStatus(status);
+        item.setUpdated(new Date());
         saveItemToStorage(item);
         setDirty(true);
     }

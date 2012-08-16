@@ -29,11 +29,11 @@ public interface ItemsView<T> {
         void delete(int index, T t);
 
         void clearAll();
-        
+
         String getId(T t);
 
         int compareIds(T o1, T o2);
-        
+
         String getText(T t);
 
         void updateText(T t, String value);
@@ -49,6 +49,14 @@ public interface ItemsView<T> {
         void updateStatus(T t, String value);
 
         int compareStatuses(T o1, T o2);
+
+        String getCreated(T t);
+
+        int compareCreated(T o1, T o2);
+
+        String getUpdated(T t);
+        
+        int compareUpdated(T o1, T o2);
         
         void save();
 

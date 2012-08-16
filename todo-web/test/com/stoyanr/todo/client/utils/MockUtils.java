@@ -14,19 +14,8 @@
  * General Public License for more details.
  */
 
-package com.stoyanr.todo.client.util;
+package com.stoyanr.todo.client.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import com.stoyanr.todo.client.presenter.JsonSerializer;
-import com.stoyanr.todo.model.Document;
-import com.stoyanr.todo.model.Item;
-
-import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
@@ -35,36 +24,24 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestUtils {
-    
-    public static final String MODULE_NAME = "com.stoyanr.todo.Todo";
-    
+import java.util.HashMap;
+import java.util.Map;
+
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import com.stoyanr.todo.client.presenter.JsonSerializer;
+import com.stoyanr.todo.client.util.LocalStorage;
+import com.stoyanr.todo.model.Document;
+import com.stoyanr.todo.model.Item;
+
+public class MockUtils {
+
     // @formatter:off
     private static Map<String, Object> stored = new HashMap<String, Object>();
     private static Map<String, Object> serialized = new HashMap<String, Object>();
     // @formatter:on
 
-    public static void assertDocumentEquals(Document expected, Document actual,
-        boolean compareItems) {
-        assertEquals(expected.getUserId(), actual.getUserId());
-        assertEquals(expected.getLastSaved(), actual.getLastSaved());
-        if (compareItems) {
-            assertEquals(expected.getItems().size(), actual.getItems().size());
-            for (int i = 0; i < actual.getItems().size(); i++) {
-                assertItemEquals(expected.getItems().get(i), actual.getItems()
-                    .get(i));
-            }
-        }
-    }
-
-    public static void assertItemEquals(Item expected, Item actual) {
-        assertEquals(expected.getKey(), actual.getKey());
-        assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getText(), actual.getText());
-        assertEquals(expected.getPriority(), actual.getPriority());
-        assertEquals(expected.getStatus(), actual.getStatus());
-    }
-    
     public static LocalStorage createMockStorage() {
         LocalStorage storage = mock(LocalStorage.class);
         when(storage.isPresent()).thenReturn(true);
@@ -117,7 +94,7 @@ public class TestUtils {
         // @formatter:on
         return storage;
     }
-    
+
     public static void clearMockStorage() {
         stored.clear();
     }
@@ -170,5 +147,4 @@ public class TestUtils {
     public static void clearMockSerializer() {
         serialized.clear();
     }
-
 }

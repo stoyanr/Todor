@@ -16,6 +16,8 @@
 
 package com.stoyanr.todo.client.util;
 
+import static com.stoyanr.todo.client.utils.TestUtils.NOW;
+import static com.stoyanr.todo.client.utils.TestUtils.THEN;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -39,8 +41,8 @@ public class LocalStorageNotPresentTest {
     LocalStorage storage;
     
     private static Object[][] PARAMETERS = new Object[][] { 
-        { "", 0L, false, new Date(0) }, 
-        { "xxx", 1L, true, new Date() } 
+        { "(empty)", 0L, false, THEN }, 
+        { "xxx", 1L, true, NOW } 
     };
     
     public LocalStorageNotPresentTest(String stringValue, long longValue,
@@ -88,7 +90,7 @@ public class LocalStorageNotPresentTest {
     @Test
     public void testGetDateValue() {
         storage.setDateValue("d", dateValue);
-        assertEquals(new Date(0), storage.getDateValue("d"));
+        assertEquals(THEN, storage.getDateValue("d"));
     }
 
     @Test
@@ -108,6 +110,6 @@ public class LocalStorageNotPresentTest {
         assertEquals("", storage.getStringValue("s"));
         assertEquals(0, storage.getLongValue("l"));
         assertEquals(false, storage.getBooleanValue("b"));
-        assertEquals(new Date(0), storage.getDateValue("d"));
+        assertEquals(THEN, storage.getDateValue("d"));
     }
 }

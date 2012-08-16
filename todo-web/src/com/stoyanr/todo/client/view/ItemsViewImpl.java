@@ -89,7 +89,11 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
 
     private ListDataProvider<T> dataProvider;
     private Presenter<T> presenter;
-    
+
+    private static enum CompareMode {
+        ID, PRIORITY, STATUS, CREATED, UPDATED
+    };
+
     public ItemsViewImpl(UserAccount userAccount, List<String> priorityNames,
         List<String> statusNames) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -107,27 +111,41 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
         Column<T, String> textColumn = createTextColumn();
         Column<T, String> prioColumn = createPriorityColumn(priorityNames);
         Column<T, String> statusColumn = createStatusColumn(statusNames);
+        Column<T, String> createdColumn = createCreatedColumn();
+        Column<T, String> updatedColumn = createUpdatedColumn();
         Column<T, String> xColumn = createXColumn();
 
         itemsTable.addColumn(idColumn, "Id");
         itemsTable.addColumn(textColumn, "Description");
         itemsTable.addColumn(prioColumn, "Priority");
         itemsTable.addColumn(statusColumn, "Status");
+        itemsTable.addColumn(createdColumn, "Created");
+        itemsTable.addColumn(updatedColumn, "Updated");
         itemsTable.addColumn(xColumn, "");
 
-        itemsTable.setColumnWidth(idColumn, 5, Unit.PCT);
-        itemsTable.setColumnWidth(textColumn, 70, Unit.PCT);
-        itemsTable.setColumnWidth(prioColumn, 10, Unit.PCT);
-        itemsTable.setColumnWidth(statusColumn, 10, Unit.PCT);
-        itemsTable.setColumnWidth(xColumn, 5, Unit.PCT);
+        itemsTable.setColumnWidth(idColumn, 3, Unit.PCT);
+        itemsTable.setColumnWidth(textColumn, 64, Unit.PCT);
+        itemsTable.setColumnWidth(prioColumn, 5, Unit.PCT);
+        itemsTable.setColumnWidth(statusColumn, 5, Unit.PCT);
+        itemsTable.setColumnWidth(createdColumn, 10, Unit.PCT);
+        itemsTable.setColumnWidth(updatedColumn, 10, Unit.PCT);
+        itemsTable.setColumnWidth(xColumn, 3, Unit.PCT);
 
-        ListHandler<T> idHandler = createIdHandler(idColumn, list);
-        ListHandler<T> prioHandler = createPrioHandler(prioColumn, list);
-        ListHandler<T> statusHandler = createStatusHandler(statusColumn, list);
+        ListHandler<T> idHandler = createHandler(idColumn, list, CompareMode.ID);
+        ListHandler<T> prioHandler = createHandler(prioColumn, list,
+            CompareMode.PRIORITY);
+        ListHandler<T> statusHandler = createHandler(statusColumn, list,
+            CompareMode.STATUS);
+        ListHandler<T> createdHandler = createHandler(createdColumn, list,
+            CompareMode.CREATED);
+        ListHandler<T> updatedHandler = createHandler(updatedColumn, list,
+            CompareMode.UPDATED);
 
         itemsTable.addColumnSortHandler(idHandler);
         itemsTable.addColumnSortHandler(prioHandler);
         itemsTable.addColumnSortHandler(statusHandler);
+        itemsTable.addColumnSortHandler(createdHandler);
+        itemsTable.addColumnSortHandler(updatedHandler);
 
         itemsTable.getColumnSortList().push(idColumn);
     }
@@ -157,6 +175,7 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
             @Override
             public void update(int index, T t, String value) {
                 presenter.updateText(t, value);
+                dataProvider.refresh();
             }
         });
         return col;
@@ -176,6 +195,7 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
             @Override
             public void update(int index, T t, String value) {
                 presenter.updatePriority(t, value);
+                dataProvider.refresh();
             }
         });
         col.setSortable(true);
@@ -196,8 +216,33 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
             @Override
             public void update(int index, T t, String value) {
                 presenter.updateStatus(t, value);
+                dataProvider.refresh();
             }
         });
+        col.setSortable(true);
+        return col;
+    }
+
+    private Column<T, String> createCreatedColumn() {
+        Column<T, String> col = new Column<T, String>(new TextCell()) {
+
+            @Override
+            public String getValue(T t) {
+                return presenter.getCreated(t);
+            }
+        };
+        col.setSortable(true);
+        return col;
+    }
+
+    private Column<T, String> createUpdatedColumn() {
+        Column<T, String> col = new Column<T, String>(new TextCell()) {
+
+            @Override
+            public String getValue(T t) {
+                return presenter.getUpdated(t);
+            }
+        };
         col.setSortable(true);
         return col;
     }
@@ -223,7 +268,8 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
         return col;
     }
 
-    private ListHandler<T> createIdHandler(Column<T, String> col, List<T> list) {
+    private ListHandler<T> createHandler(Column<T, String> col, List<T> list,
+        final CompareMode mode) {
         ListHandler<T> idHandler = new ListHandler<T>(list);
         idHandler.setComparator(col, new Comparator<T>() {
 
@@ -236,52 +282,28 @@ public class ItemsViewImpl<T> extends Composite implements ItemsView<T> {
                 } else if (o1 == null && o2 != null) {
                     return -1;
                 } else {
-                    return presenter.compareIds(o1, o2);
+                    return compareBy(o1, o2, mode);
                 }
             }
+
         });
         return idHandler;
     }
 
-    private ListHandler<T> createPrioHandler(Column<T, String> col, List<T> list) {
-        ListHandler<T> prioHandler = new ListHandler<T>(list);
-        prioHandler.setComparator(col, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                if (o1 == o2) {
-                    return 0;
-                } else if (o1 != null && o2 == null) {
-                    return 1;
-                } else if (o1 == null && o2 != null) {
-                    return -1;
-                } else {
-                    return presenter.comparePriorities(o1, o2);
-                }
-            }
-        });
-        return prioHandler;
-    }
-
-    private ListHandler<T> createStatusHandler(Column<T, String> col,
-        List<T> list) {
-        ListHandler<T> statusHandler = new ListHandler<T>(list);
-        statusHandler.setComparator(col, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                if (o1 == o2) {
-                    return 0;
-                } else if (o1 != null && o2 == null) {
-                    return 1;
-                } else if (o1 == null && o2 != null) {
-                    return -1;
-                } else {
-                    return presenter.compareStatuses(o1, o2);
-                }
-            }
-        });
-        return statusHandler;
+    private int compareBy(T o1, T o2, CompareMode mode) {
+        switch (mode) {
+        case ID:
+            return presenter.compareIds(o1, o2);
+        case PRIORITY:
+            return presenter.comparePriorities(o1, o2);
+        case STATUS:
+            return presenter.compareStatuses(o1, o2);
+        case CREATED:
+            return presenter.compareCreated(o1, o2);
+        case UPDATED:
+            return presenter.compareUpdated(o1, o2);
+        }
+        return 0;
     }
 
     @Override
