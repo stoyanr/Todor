@@ -16,6 +16,7 @@
 
 package com.stoyanr.todo.client;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -27,11 +28,15 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.stoyanr.todo.client.presenter.DocumentData;
 import com.stoyanr.todo.client.presenter.DocumentPresenter;
+import com.stoyanr.todo.client.presenter.JsonSerializer;
 import com.stoyanr.todo.client.presenter.Presenter;
+import com.stoyanr.todo.client.util.LocalStorage;
 import com.stoyanr.todo.client.view.ItemsView;
 import com.stoyanr.todo.client.view.ItemsViewImpl;
 import com.stoyanr.todo.client.view.LoginViewImpl;
+import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
 import com.stoyanr.todo.model.UserAccount;
 
@@ -128,8 +133,12 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 
         @Override
         public void onSuccess() {
-            new DocumentPresenter(itemsSvc, storage, userAccount,
-                getItemsView()).go(container);
+            ItemsView<Item> view = getItemsView();
+            Document doc = new Document(userAccount.getUserId(), view.getData(),
+                new Date(0));
+            DocumentData data = new DocumentData(doc,
+                new LocalStorage(storage), new JsonSerializer());
+            new DocumentPresenter(itemsSvc, data, view).go(container);
         }
     }
 }

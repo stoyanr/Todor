@@ -20,37 +20,39 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.stoyanr.todo.client.DocumentServiceAsync;
-import com.stoyanr.todo.client.util.LocalStorage;
 import com.stoyanr.todo.client.view.ItemsView;
 import com.stoyanr.todo.model.Document;
 import com.stoyanr.todo.model.Item;
 import com.stoyanr.todo.model.Item.Priority;
 import com.stoyanr.todo.model.Item.Status;
-import com.stoyanr.todo.model.UserAccount;
 
 public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
 
     private final DocumentServiceAsync svc;
-    private final Storage storage;
-    private final UserAccount userAccount;
+    private final DocumentData data;
     private final ItemsView<Item> view;
-    private DocumentData data;
 
     private static final String[] PRIO_NAMES = { "High", "Medium", "Low" };
     private static final String[] STATUS_NAMES = { "New", "In Progress",
         "Finished" };
 
-    public DocumentPresenter(DocumentServiceAsync svc, Storage storage,
-        UserAccount userAccount, ItemsView<Item> view) {
+    public DocumentPresenter(DocumentServiceAsync svc, DocumentData data,
+        ItemsView<Item> view) {
         this.svc = svc;
-        this.storage = storage;
-        this.userAccount = userAccount;
+        this.data = data;
         this.view = view;
         this.view.setPresenter(this);
+    }
+    
+    public DocumentData getData() {
+        return data;
+    }
+
+    public ItemsView<Item> getView() {
+        return view;
     }
 
     @Override
@@ -133,9 +135,6 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
     }
 
     private void initializeDocument() {
-        Document doc = new Document(userAccount.getUserId(), view.getData(),
-            new Date(0));
-        data = new DocumentData(new LocalStorage(storage), doc);
         svc.loadDocument(new LoadAsyncCallback());
     }
 

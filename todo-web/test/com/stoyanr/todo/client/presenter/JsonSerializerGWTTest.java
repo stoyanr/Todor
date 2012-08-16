@@ -1,8 +1,25 @@
+/*
+ * $Id: $
+ *
+ * Copyright (C) 2012 Stoyan Rachev (stoyanr@gmail.com)
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ */
+
 package com.stoyanr.todo.client.presenter;
 
 import java.util.Arrays;
 import java.util.Date;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gwt.json.client.JSONObject;
@@ -15,6 +32,8 @@ import com.stoyanr.todo.model.Item.Status;
 
 public class JsonSerializerGWTTest extends GWTTestCase {
     
+    JsonSerializer ser;
+    
     // @formatter:off
     private static Object[][] PARAMETERS = new Object[][] { 
         { new Document("", Arrays.asList(new Item()), new Date(0)) }, 
@@ -26,6 +45,11 @@ public class JsonSerializerGWTTest extends GWTTestCase {
     @Override
     public String getModuleName() {
         return TestUtils.MODULE_NAME;
+    }
+    
+    @Before
+    public void gwtSetUp() {
+        ser = new JsonSerializer();
     }
     
     @Test
@@ -63,26 +87,26 @@ public class JsonSerializerGWTTest extends GWTTestCase {
     }
     
     private void testGetDocumentFromJson(Document document) {
-        JSONObject json = JsonSerializer.toJson(document);
-        Document documentx = JsonSerializer.getDocument(json);
+        JSONObject json = ser.toJson(document);
+        Document documentx = ser.getDocument(json);
         TestUtils.assertDocumentEquals(document, documentx, false);
     }
 
     private void testGetDocumentFromString(Document document) {
-        String json = JsonSerializer.toString(document);
-        Document documentx = JsonSerializer.getDocument(json);
+        String json = ser.toString(document);
+        Document documentx = ser.getDocument(json);
         TestUtils.assertDocumentEquals(document, documentx, false);
     }
 
     private void testGetItemFromJson(Item item) {
-        JSONObject json = JsonSerializer.toJson(item);
-        Item itemx = JsonSerializer.getItem(json);
+        JSONObject json = ser.toJson(item);
+        Item itemx = ser.getItem(json);
         TestUtils.assertItemEquals(item, itemx);
     }
 
     private void testGetItemFromString(Item item) {
-        String json = JsonSerializer.toString(item);
-        Item itemx = JsonSerializer.getItem(json);
+        String json = ser.toString(item);
+        Item itemx = ser.getItem(json);
         TestUtils.assertItemEquals(item, itemx);
     }
 }

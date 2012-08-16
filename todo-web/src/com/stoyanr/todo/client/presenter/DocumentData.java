@@ -34,22 +34,26 @@ public class DocumentData {
 
     private final LocalStorage storage;
     private final Document document;
+    private final JsonSerializer ser;
     private long nextId;
     private boolean dirty;
 
-    public DocumentData(LocalStorage storage, Document document) {
-        assert (storage != null);
+    public DocumentData(Document document, LocalStorage storage,
+        JsonSerializer ser) {
         assert (document != null);
-        this.storage = storage;
+        assert (storage != null);
+        assert (ser != null);
         this.document = document;
-        this.nextId = 1;
+        this.storage = storage;
+        this.ser = ser;
+        this.nextId = 0;
         this.dirty = false;
         saveDocumentToStorageOnCreation();
         loadFromStorage();
     }
 
     private void saveDocumentToStorageOnCreation() {
-        if (storage.isPresent() && !loadDocumentFromStorage()) {
+        if (!loadDocumentFromStorage()) {
             saveDocumentToStorage();
         }
     }
@@ -57,7 +61,8 @@ public class DocumentData {
     public Document getDocument() {
         List<Item> items = new ArrayList<Item>();
         items.addAll(document.getItems());
-        return new Document(document.getUserId(), items, document.getLastSaved());
+        return new Document(document.getUserId(), items,
+            document.getLastSaved());
     }
 
     public void setDocument(Document document) {
@@ -80,6 +85,8 @@ public class DocumentData {
     }
 
     public void addItem(String text) {
+        assert (text != null);
+        assert (!hasItemWithId(nextId));
         Item item = new Item(null, nextId, text, Priority.MEDIUM, Status.NEW);
         document.getItems().add(item);
         saveItemToStorage(item);
@@ -89,24 +96,32 @@ public class DocumentData {
     }
 
     public void updateItem(Item item, String text) {
+        assert (item != null && hasItem(item));
+        assert (text != null);
         item.setText(text);
         saveItemToStorage(item);
         setDirty(true);
     }
 
     public void updateItem(Item item, Priority prio) {
+        assert (item != null && hasItem(item));
+        assert (prio != null);
         item.setPriority(prio);
         saveItemToStorage(item);
         setDirty(true);
     }
 
     public void updateItem(Item item, Status status) {
+        assert (item != null && hasItem(item));
+        assert (status != null);
         item.setStatus(status);
         saveItemToStorage(item);
         setDirty(true);
     }
 
     public void deleteItem(Item item, int index) {
+        assert (item != null && index < document.getItems().size() && document
+            .getItems().get(index) == item);
         document.getItems().remove(index);
         deleteItemFromStorage(item);
         setDirty(true);
@@ -116,6 +131,10 @@ public class DocumentData {
         document.getItems().clear();
         storage.clearValues();
         setDirty(true);
+    }
+
+    public long getNextId() {
+        return nextId;
     }
 
     public boolean isDirty() {
@@ -150,7 +169,7 @@ public class DocumentData {
         boolean result = false;
         String value = storage.getStringValue(getKey(DOCUMENT_KEY));
         if (!value.isEmpty()) {
-            Document doc = JsonSerializer.getDocument(value);
+            Document doc = ser.getDocument(value);
             assert (document.getUserId().equals(doc.getUserId()));
             document.setLastSaved(doc.getLastSaved());
             result = true;
@@ -159,7 +178,7 @@ public class DocumentData {
     }
 
     private void saveDocumentToStorage() {
-        String json = JsonSerializer.toString(document);
+        String json = ser.toString(document);
         storage.setStringValue(getKey(DOCUMENT_KEY), json);
     }
 
@@ -183,22 +202,37 @@ public class DocumentData {
         Item item = null;
         String value = storage.getStringValue(getKey(ITEM_KEY) + id);
         if (!value.isEmpty()) {
-            item = JsonSerializer.getItem(value);
+            item = ser.getItem(value);
         }
         return item;
     }
 
     private void saveItemToStorage(Item item) {
-        String json = JsonSerializer.toString(item);
+        String json = ser.toString(item);
         storage.setStringValue(getKey(ITEM_KEY) + item.getId(), json);
     }
 
     private void deleteItemFromStorage(Item item) {
         storage.removeValue(getKey(ITEM_KEY) + item.getId());
     }
-    
+
     private String getKey(String key) {
         return "todo-" + document.getUserId() + "-" + key;
+    }
+
+    private boolean hasItem(Item item) {
+        return document.getItems().contains(item);
+    }
+
+    private boolean hasItemWithId(long id) {
+        boolean result = false;
+        for (Item item : document.getItems()) {
+            if (item.getId() == id) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
 }
