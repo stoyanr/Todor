@@ -18,29 +18,8 @@
   xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
   <ui:style>
-    .headerPanel {
-    	margin: 5px 5px 5px 5px;
-    	width: 100%;
-    	text-align: right;
-    }
-    
-    .buttonsPanel {
-    	margin: 5px 5px 5px 5px;
-    	width: 100%;
-    }
-    
-    .buttonsPanel2 {
-    	margin: 5px 5px 5px 5px;
-    }
-    
     .button {
-    	display: block;
-    	font-size: 16pt;
-    }
-    
-    .itemsTable {
-    	margin: 5px 5px 5px 5px;
-    	width: 100%;
+        display: block;
     }
     
     .dialogPanel {
@@ -56,28 +35,49 @@
     }
   </ui:style>
 
-  <g:VerticalPanel width="95%">
-    <g:HorizontalPanel width="100%" horizontalAlignment="right"
-      addStyleNames="{style.headerPanel}" spacing="5">
-      <g:Label ui:field="nicknameLabel" width="95%"></g:Label>
-      <g:Anchor ui:field="signOutLink">Sign Out</g:Anchor>
-    </g:HorizontalPanel>
-
-    <g:VerticalPanel width="100%" horizontalAlignment="center">
-      <g:HorizontalPanel addStyleNames="{style.buttonsPanel}"
-        spacing="5">
-        <g:TextBox ui:field="itemField" width="95%"></g:TextBox>
-        <g:Button ui:field="addButton" addStyleNames="{style.button}">Add</g:Button>
-      </g:HorizontalPanel>
-
-      <c:CellTable ui:field="itemsTable" addStyleNames="{style.itemsTable}"></c:CellTable>
-
-      <g:HorizontalPanel addStyleNames="{style.buttonsPanel2}"
-        spacing="5">
-        <g:Button ui:field="saveButton" addStyleNames="{style.button}">Save</g:Button>
-        <g:Button ui:field="clearAllButton" addStyleNames="{style.button}">Clear All</g:Button>
-      </g:HorizontalPanel>
-    </g:VerticalPanel>
+  <g:HTMLPanel width="100%">
+    <table cellspacing="2" cellpadding="2" style="width: 100%; ">
+      <tr>
+        <td align="right" style="width: 95%; ">
+          <g:Label ui:field="nicknameLabel"></g:Label>
+        </td>
+        <td align="right" style="width: 5%; ">
+          <g:Anchor ui:field="signOutLink">Sign Out</g:Anchor>
+        </td>
+      </tr>
+    </table>
+    <table cellspacing="2" cellpadding="2" style="width: 100%; ">
+      <tr>
+        <td align="left" style="width: 100%; ">
+          <g:TextBox ui:field="itemField" width="99%"></g:TextBox>
+        </td>
+        <td align="right" style="width: 0%; ">
+          <g:Button ui:field="addButton" addStyleNames="{style.button}">Add</g:Button>
+        </td>
+      </tr>
+    </table>
+    <table cellspacing="2" cellpadding="2" style="width: 100%; ">
+      <tr>
+        <td align="center" style="width: 100%; ">
+          <c:CellTable ui:field="itemsTable"></c:CellTable>
+        </td>
+      </tr>
+    </table>
+    <table cellspacing="2" cellpadding="2" style="width: 100%; ">
+      <tr>
+        <td align="left" style="width: 0%; ">
+          <g:Button ui:field="saveButton" addStyleNames="{style.button}">Save</g:Button>
+        </td>
+        <td align="left" style="width: 100%; ">
+          <g:Button ui:field="clearAllButton" addStyleNames="{style.button}">Clear All</g:Button>
+        </td>
+      </tr>
+    </table>
+    <table cellspacing="2" cellpadding="2" style="width: 100%; ">
+      <tr>
+        <td align="center"><br/><br/>Copyright (C) 2012 <a href="mailto:stoyanr@gmail.com">Stoyan Rachev</a>. All rights reserved.</td>
+      </tr>
+    </table>
 
     <g:DialogBox ui:field="dialogBox" text="Failure"
       animationEnabled="true" visible="false">
@@ -87,6 +87,6 @@
       </g:VerticalPanel>
     </g:DialogBox>
 
-  </g:VerticalPanel>
+  </g:HTMLPanel>
 
 </ui:UiBinder> 
