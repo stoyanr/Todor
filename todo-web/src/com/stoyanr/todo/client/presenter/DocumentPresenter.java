@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.stoyanr.todo.client.DocumentServiceAsync;
@@ -38,6 +39,8 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
     private static final String[] PRIO_NAMES = { "High", "Medium", "Low" };
     private static final String[] STATUS_NAMES = { "New", "In Progress",
         "Finished" };
+    
+    private static final DateTimeFormat FMT = DateTimeFormat.getFormat("dd/MM/yyyy HH:mm:ss");
 
     public DocumentPresenter(DocumentServiceAsync svc, DocumentData data,
         ItemsView<Item> view) {
@@ -129,10 +132,9 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
         return (o1.getStatus().compareTo(o2.getStatus()));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String getCreated(Item item) {
-        return item.getCreated().toLocaleString();
+        return FMT.format(item.getCreated());
     }
 
     @Override
@@ -140,10 +142,9 @@ public class DocumentPresenter implements Presenter, ItemsView.Presenter<Item> {
         return (o1.getCreated().compareTo(o2.getCreated()));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String getUpdated(Item item) {
-        return item.getUpdated().toLocaleString();
+        return FMT.format(item.getUpdated());
     }
 
     @Override
