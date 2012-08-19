@@ -1,4 +1,4 @@
-Todo is a simple GWT / HTML5 To-do List application. 
+Todor is a simple Todo list management Web application, based on Google Web Toolkit. One of its most prominent features is using HTML5 local storage to enable offline editing of Todo items. It showcases GWT architecture principles and programming practices such as Model-View-Presenter (MVP), UI binding, HTML5 storage, client-server communication, JDO-based persistence, and unit testing.
 
 Feedback, comments, and contributions are welcome!
 
