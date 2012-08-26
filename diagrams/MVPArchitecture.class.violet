@@ -240,15 +240,15 @@ ItemsView.Presenter&lt;Item&gt;</string>
     <void property="methods">
      <void property="text">
       <string>+asWidget() : Widget
-+setData(data : List&lt;Item&gt;)
-+getData() : List&lt;Item&gt;
++setData(data : List&lt;T&gt;)
++getData() : List&lt;T&gt;
 ...</string>
      </void>
     </void>
     <void property="name">
      <void property="text">
       <string>«interface»
-ItemsView&lt;Item&gt;</string>
+ItemsView&lt;T&gt;</string>
      </void>
     </void>
    </object>
@@ -287,7 +287,7 @@ ItemsView&lt;Item&gt;</string>
     <void property="name">
      <void property="text">
       <string>«view»
-ItemsViewImpl&lt;Item&gt;</string>
+ItemsViewImpl&lt;T&gt;</string>
      </void>
     </void>
    </object>

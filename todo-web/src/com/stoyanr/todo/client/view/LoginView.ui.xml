@@ -20,8 +20,8 @@
   <ui:style>
   </ui:style>
 
-  <g:VerticalPanel>
-    <g:Label>Please sign in to your Google Account to access the Todo application.</g:Label>
+  <g:VerticalPanel horizontalAlignment="center" width="100%">
+    <g:Label>Please sign in to your Google Account to access Todor.</g:Label>
     <g:Anchor ui:field="signInLink">Sign In</g:Anchor>
   </g:VerticalPanel>
 
